@@ -1,0 +1,20 @@
+{
+  "name": "swynex-backend-api-and-database",
+  "version": "1.0.0",
+  "description": "Express REST API and MySQL persistence layer for a Student Task Management System",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "keywords": ["swynex", "express", "mysql", "rest-api", "student-task-management"],
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mysql2": "^3.12.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
