@@ -1,102 +1,137 @@
-# Backend Documentation
+# SWYNEX Backend API and Database
 
-## 1. Overview
+A Node.js + Express.js REST API with MySQL persistence for the Student Task Management System planned in Task 1.
 
-The backend of the Student Task Management System will manage business logic, user authentication, task operations, and communication with the MySQL database.
+## Features
 
-## 2. Technology Stack
+- Create, list, retrieve, update, and delete tasks (CRUD)
+- Request validation for title, due date, status, and priority
+- Parameterized SQL queries to avoid SQL injection
+- Consistent JSON responses and HTTP status codes
+- MySQL connection pool and environment-based configuration
+- Health-check endpoint
 
-- Java
-- Spring Boot
-- Spring Web
-- Spring Data JPA
-- Spring Security
-- MySQL
-- Maven
+## Requirements
 
-## 3. Proposed Backend Structure
+- Node.js 18 or newer
+- MySQL 8 or compatible version
+- npm
 
-```text
-backend/
-├── README.md
-└── src/
-    └── main/
-        ├── java/
-        │   └── com/studenttask/
-        │       ├── controller/
-        │       ├── service/
-        │       ├── repository/
-        │       ├── model/
-        │       ├── dto/
-        │       └── config/
-        └── resources/
-            └── application.properties
+## Setup
+
+1. Clone your repository and enter the project folder.
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Create the database and table by running `database/schema.sql` in MySQL Workbench or the MySQL command line:
+
+   ```bash
+   mysql -u root -p < database/schema.sql
+   ```
+
+4. Copy `.env.example` to `.env` and update `DB_USER`, `DB_PASSWORD`, and other values to match your local MySQL configuration. Never commit `.env`.
+5. Start the API:
+
+   ```bash
+   npm start
+   ```
+
+6. Visit `http://localhost:3000/health`. A healthy response should look like:
+
+   ```json
+   { "success": true, "status": "healthy" }
+   ```
+
+## Data model
+
+`tasks` includes `id`, `title`, `description`, `due_date`, `status`, `priority`, `created_at`, and `updated_at`. `status` is one of `pending`, `in_progress`, or `completed`; `priority` is one of `low`, `medium`, or `high`.
+
+## API endpoints
+
+Base URL: `http://localhost:3000`
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/health` | API health check |
+| GET | `/api/tasks` | List all tasks |
+| GET | `/api/tasks/:id` | Get one task |
+| POST | `/api/tasks` | Create a task |
+| PUT | `/api/tasks/:id` | Update a task |
+| DELETE | `/api/tasks/:id` | Delete a task |
+
+### Create a task
+
+`POST /api/tasks` with `Content-Type: application/json`:
+
+```json
+{
+  "title": "Complete DBMS assignment",
+  "description": "Finish normalization exercises",
+  "due_date": "2026-11-02",
+  "status": "pending",
+  "priority": "high"
+}
 ```
 
-This is the proposed structure. The backend implementation will be added during development.
+`title` is required (1–120 characters after trimming). `description` and `due_date` can be omitted or null. Status defaults to `pending`, and priority defaults to `medium`. Dates must be valid `YYYY-MM-DD` calendar dates.
 
-## 4. API Endpoints
+### Example validation error
 
-| Method | Endpoint | Purpose |
-|---|---|---|
-| POST | /api/auth/register | Register a user |
-| POST | /api/auth/login | Authenticate a user |
-| GET | /api/tasks | Get the current user's tasks |
-| POST | /api/tasks | Create a task |
-| GET | /api/tasks/{id} | Get a specific task |
-| PUT | /api/tasks/{id} | Update a task |
-| DELETE | /api/tasks/{id} | Delete a task |
+A request with an empty title returns HTTP `400`:
 
-## 5. Database Design
+```json
+{
+  "success": false,
+  "errors": ["title is required and must be a non-empty string."]
+}
+```
 
-### User Entity
-- `id`: Primary key
-- `name`: Student name
-- `email`: Unique email address
-- `password_hash`: Securely hashed password
+## Test with curl
 
-### Task Entity
-- `id`: Primary key
-- `title`: Task title
-- `description`: Task details
-- `due_date`: Task deadline
-- `priority`: LOW, MEDIUM, or HIGH
-- `status`: PENDING, IN_PROGRESS, or COMPLETED
-- `user_id`: Foreign key referencing the user
+```bash
+curl http://localhost:3000/api/tasks
 
-## 6. Backend Responsibilities
+curl -X POST http://localhost:3000/api/tasks \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Complete assignment","priority":"high"}'
 
-- Validate incoming requests.
-- Authenticate users and authorize protected requests.
-- Implement task CRUD operations.
-- Persist data through Spring Data JPA.
-- Return appropriate HTTP status codes.
-- Handle errors consistently.
+curl -X PUT http://localhost:3000/api/tasks/1 \
+  -H "Content-Type: application/json" \
+  -d '{"status":"completed"}'
 
-## 7. Security
+curl -X DELETE http://localhost:3000/api/tasks/1
+```
 
-- Hash passwords using a secure password encoder.
-- Protect private endpoints with authentication.
-- Verify task ownership for every task-specific operation.
-- Keep database credentials outside version control.
-- Use HTTPS in production.
+You can also send the same requests from Postman. Test valid input, an empty title, an invalid status, an invalid date, a missing task ID, and an unknown route.
 
-## 8. Testing Strategy
+## Project structure
 
-- Unit-test service-layer business logic.
-- Test API endpoints and validation.
-- Test database relationships and persistence.
-- Test authentication and authorization.
-- Verify error handling for invalid requests.
+```text
+SWYNEX-Backend-API-and-Database/
+├── database/schema.sql
+├── src/
+│   ├── config/db.js
+│   ├── controllers/tasksController.js
+│   ├── middleware/errorHandler.js
+│   ├── middleware/notFound.js
+│   ├── routes/tasks.js
+│   ├── app.js
+│   └── server.js
+├── .env.example
+├── .gitignore
+├── package.json
+└── README.md
+```
 
-## 9. Current Status
+## Security and limitations
 
-This document describes the proposed backend architecture. Controllers, services, repositories, and database integration are planned for implementation.
+- SQL queries use placeholders for user-supplied values.
+- Secrets belong in `.env`, which is ignored by Git.
+- This task implementation does not include authentication or user ownership; add those before using it with real student data.
 
-## 10. Future Enhancements
+## Internship task
 
-- Pagination and sorting.
-- Deadline notifications.
-- API documentation using OpenAPI.
-- Docker-based deployment.
-- Automated testing in a CI/CD pipeline.
+Prepared for SWYNEX Internship Task 2: Backend API and Database. Verify the API locally and update this README with screenshots or test results from your own run before submitting.
