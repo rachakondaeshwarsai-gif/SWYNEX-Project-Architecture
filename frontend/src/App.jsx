@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 import './App.css'
 
-const API = 'http://localhost:3000/api/tasks'
+const API = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/tasks'
 
 // Convert backend task data into frontend format
 function formatTask(task) {
