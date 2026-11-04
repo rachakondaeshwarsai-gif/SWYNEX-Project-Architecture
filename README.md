@@ -117,3 +117,34 @@ The frontend and backend directories will contain the application code as develo
 ## 11. Conclusion
 
 This architecture establishes a modular foundation for a student task management application. Separating the frontend, backend, and database makes the system easier to maintain, test, and extend.
+
+## Task 4: Complete Deployed Application
+
+### Live Application
+- Frontend: https://swynex-frontend.onrender.com
+- Backend: https://swynex-backend-api-83wh.onrender.com
+- Health Check: https://swynex-backend-api-83wh.onrender.com/health
+- Tasks API: https://swynex-backend-api-83wh.onrender.com/api/tasks
+
+### Technology Stack
+- Frontend: React.js, JavaScript, CSS
+- Backend: Node.js, Express.js
+- Database: MySQL on Aiven
+- Deployment: Render
+- HTTP Client: Axios
+
+### Features
+- Create, view, update and delete tasks
+- Task status and priority management
+- Dashboard with task statistics
+- Search functionality
+- Persistent cloud database storage
+- Responsive dashboard interface
+
+### Deployment
+The React frontend and Express backend are deployed separately on Render.
+The backend connects to the Aiven MySQL cloud database using SSL.
+
+### Configuration
+Required environment variables are documented in the project setup instructions.
+Sensitive credentials are stored securely in deployment environment variables and are not committed to GitHub.
