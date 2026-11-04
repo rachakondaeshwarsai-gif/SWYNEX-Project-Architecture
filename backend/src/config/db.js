@@ -1,6 +1,7 @@
+
 const mysql = require('mysql2/promise');
 
-const pool = mysql.createPool({
+const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
   port: Number(process.env.DB_PORT || 3306),
   user: process.env.DB_USER || 'root',
@@ -10,6 +11,15 @@ const pool = mysql.createPool({
   connectionLimit: 10,
   queueLimit: 0,
   dateStrings: true
-});
+};
+
+// Enable verified SSL when connecting to cloud MySQL
+if (process.env.DB_SSL_CA) {
+  dbConfig.ssl = {
+    ca: process.env.DB_SSL_CA
+  };
+}
+
+const pool = mysql.createPool(dbConfig);
 
 module.exports = pool;
